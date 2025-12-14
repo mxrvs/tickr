@@ -185,7 +185,7 @@ export default function HolidaysPage() {
                           ) : countdown.hasPassed ? (
                             <p className="text-gray-500 font-semibold text-center">Already Celebrated ({Math.abs(daysUntil(holiday.date))} days ago)</p>
                           ) : (
-                            <div className="text-center font-mono text-xl md:text-2xl">
+                            <div className="text-center font-mono text-xl md:text-2xl font-bold tracking-wider [font-family:var(--font-digital)] leading-tight">
                               {formatTimeUnit(countdown.days, "d")} : {formatTimeUnit(countdown.hours, "h")} : {formatTimeUnit(countdown.minutes, "m")} : {formatTimeUnit(countdown.seconds, "s")}
                             </div>
                           )}
