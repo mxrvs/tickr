@@ -181,7 +181,7 @@ export default function HolidaysPage() {
                           </p>
 
                           {countdown.isToday ? (
-                            <p className="text-green-600 font-bold text-center">Today's the day! 🎉</p>
+                            <p className="text-green-600 font-bold text-center">Today&apos;s the day! 🎉</p>
                           ) : countdown.hasPassed ? (
                             <p className="text-gray-500 font-semibold text-center">Already Celebrated ({Math.abs(daysUntil(holiday.date))} days ago)</p>
                           ) : (

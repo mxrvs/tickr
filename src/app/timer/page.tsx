@@ -55,7 +55,7 @@ export default function TimerPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTimerId, setEditingTimerId] = useState<number | null>(null);
   const [isClient, setIsClient] = useState(false);
-  
+
   const [settings, setSettings] = useState<TimerSettings>({
     hours: 0,
     minutes: 0,
@@ -78,13 +78,13 @@ export default function TimerPage() {
   // Load timers from localStorage on component mount
   useEffect(() => {
     if (!isClient) return;
-    
+
     try {
       const savedTimers = localStorage.getItem(TIMERS_STORAGE_KEY);
       if (savedTimers) {
         const parsedTimers = JSON.parse(savedTimers);
         setTimers(parsedTimers);
-        
+
         // Set active timer if there are timers
         if (parsedTimers.length > 0) {
           // Find the first running timer, or the first timer if none are running
@@ -100,7 +100,7 @@ export default function TimerPage() {
   // Save timers to localStorage whenever they change
   useEffect(() => {
     if (!isClient) return;
-    
+
     try {
       localStorage.setItem(TIMERS_STORAGE_KEY, JSON.stringify(timers));
     } catch (error) {
@@ -111,7 +111,7 @@ export default function TimerPage() {
   // Initialize audio objects
   useEffect(() => {
     if (!isClient) return;
-    
+
     timerSounds.forEach((sound) => {
       if (!audioRefs.current[sound.value]) {
         const audio = new Audio(sound.value);
@@ -124,27 +124,27 @@ export default function TimerPage() {
   // Timer countdown effect
   useEffect(() => {
     if (!isClient) return;
-    
+
     const interval = setInterval(() => {
-      setTimers(prevTimers => 
+      setTimers(prevTimers =>
         prevTimers.map(timer => {
           if (!timer.isRunning) return timer;
-          
+
           const newTime = timer.currentTime - 1;
-          
+
           // Check if timer reached zero
           if (newTime <= 0) {
             const audio = audioRefs.current[timer.sound];
             if (audio) {
               audio.currentTime = 0;
-              
+
               // Get current theme for alert styling
               const theme = getCurrentTheme();
-              
+
               if (timer.repeatSound) {
                 audio.loop = true;
-                audio.play().catch(() => {});
-                
+                audio.play().catch(() => { });
+
                 // Show alert with stop button for repeating sounds
                 Swal.fire({
                   title: `⏱ Timer Finished!`,
@@ -170,8 +170,8 @@ export default function TimerPage() {
                 });
               } else {
                 audio.loop = false;
-                audio.play().catch(() => {});
-                
+                audio.play().catch(() => { });
+
                 Swal.fire({
                   title: `⏱ Timer Finished!`,
                   text: `Timer "${timer.title}" has reached zero`,
@@ -188,11 +188,11 @@ export default function TimerPage() {
                 });
               }
             }
-            
+
             // Reset timer and stop it
             return { ...timer, currentTime: timer.targetTime, isRunning: false };
           }
-          
+
           return { ...timer, currentTime: newTime };
         })
       );
@@ -203,7 +203,7 @@ export default function TimerPage() {
 
   const handleAddTimer = () => {
     if (!isClient) return;
-    
+
     setIsModalOpen(true);
     setEditingTimerId(null);
     setSettings({
@@ -217,7 +217,7 @@ export default function TimerPage() {
 
   const handleEditTimer = (timerId: number) => {
     if (!isClient) return;
-    
+
     const timerToEdit = timers.find(t => t.id === timerId);
     if (timerToEdit && !timerToEdit.isRunning) {
       setIsModalOpen(true);
@@ -234,13 +234,13 @@ export default function TimerPage() {
 
   const handleSaveTimer = () => {
     if (!isClient) return;
-    
+
     const targetTime = (settings.hours * 3600) + (settings.minutes * 60) + settings.seconds;
-    
+
     if (targetTime === 0) {
       // Get current theme for alert styling
       const theme = getCurrentTheme();
-      
+
       Swal.fire({
         title: "Invalid Timer",
         text: "Please set a timer duration greater than 0",
@@ -253,21 +253,21 @@ export default function TimerPage() {
       });
       return;
     }
-    
+
     if (editingTimerId) {
       // Update existing timer
-      setTimers(prev => prev.map(timer => 
-        timer.id === editingTimerId 
+      setTimers(prev => prev.map(timer =>
+        timer.id === editingTimerId
           ? {
-              ...timer,
-              hours: settings.hours,
-              minutes: settings.minutes,
-              seconds: settings.seconds,
-              sound: settings.sound,
-              repeatSound: settings.repeatSound,
-              currentTime: targetTime,
-              targetTime: targetTime,
-            }
+            ...timer,
+            hours: settings.hours,
+            minutes: settings.minutes,
+            seconds: settings.seconds,
+            sound: settings.sound,
+            repeatSound: settings.repeatSound,
+            currentTime: targetTime,
+            targetTime: targetTime,
+          }
           : timer
       ));
       setActiveTimerId(editingTimerId);
@@ -288,7 +288,7 @@ export default function TimerPage() {
       setTimers(prev => [...prev, newTimer]);
       setActiveTimerId(newTimer.id);
     }
-    
+
     setIsModalOpen(false);
     setSettings({
       hours: 0,
@@ -301,7 +301,7 @@ export default function TimerPage() {
 
   const handleStartTimer = (timerId: number) => {
     if (!isClient) return;
-    
+
     setTimers(prev => prev.map(timer => {
       if (timer.id === timerId) {
         // Start this timer
@@ -316,9 +316,9 @@ export default function TimerPage() {
 
   const handlePauseTimer = (timerId: number) => {
     if (!isClient) return;
-    
-    setTimers(prev => prev.map(timer => 
-      timer.id === timerId 
+
+    setTimers(prev => prev.map(timer =>
+      timer.id === timerId
         ? { ...timer, isRunning: false }
         : timer
     ));
@@ -326,11 +326,11 @@ export default function TimerPage() {
 
   const handleResetTimer = (timerId: number) => {
     if (!isClient) return;
-    
+
     const timer = timers.find(t => t.id === timerId);
     if (timer && !timer.isRunning) {
-      setTimers(prev => prev.map(t => 
-        t.id === timerId 
+      setTimers(prev => prev.map(t =>
+        t.id === timerId
           ? { ...t, currentTime: t.targetTime, isRunning: false }
           : t
       ));
@@ -339,7 +339,7 @@ export default function TimerPage() {
 
   const handleDeleteTimer = (timerId: number) => {
     if (!isClient) return;
-    
+
     const timer = timers.find(t => t.id === timerId);
     if (timer && !timer.isRunning) {
       setTimers(prev => prev.filter(t => t.id !== timerId));
@@ -350,9 +350,10 @@ export default function TimerPage() {
     }
   };
 
-  const updateSetting = (key: keyof TimerSettings, value: any) => {
+  const updateSetting = (key: keyof TimerSettings, value: number | string | boolean) => {
     setSettings(prev => ({ ...prev, [key]: value }));
   };
+
 
   // Don't render until client-side to avoid hydration issues
   if (!isClient) {
@@ -411,11 +412,10 @@ export default function TimerPage() {
             {timers.map((timer) => (
               <div
                 key={timer.id}
-                className={`flex flex-col sm:flex-row justify-between items-center border-2 rounded-xl p-3 md:p-4 gap-2 shadow-sm transition-all duration-300 ${
-                  activeTimer?.id === timer.id
+                className={`flex flex-col sm:flex-row justify-between items-center border-2 rounded-xl p-3 md:p-4 gap-2 shadow-sm transition-all duration-300 ${activeTimer?.id === timer.id
                     ? "border-blue-500 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/20"
                     : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
-                }`}
+                  }`}
               >
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
@@ -460,33 +460,30 @@ export default function TimerPage() {
                   <button
                     onClick={() => handleResetTimer(timer.id)}
                     disabled={timer.isRunning}
-                    className={`px-3 py-2 border rounded-lg text-sm ${
-                      timer.isRunning
+                    className={`px-3 py-2 border rounded-lg text-sm ${timer.isRunning
                         ? "border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed bg-gray-100 dark:bg-gray-700"
                         : "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
-                    }`}
+                      }`}
                   >
                     Reset
                   </button>
                   <button
                     onClick={() => handleEditTimer(timer.id)}
                     disabled={timer.isRunning}
-                    className={`px-3 py-2 border rounded-lg text-sm ${
-                      timer.isRunning
+                    className={`px-3 py-2 border rounded-lg text-sm ${timer.isRunning
                         ? "border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed bg-gray-100 dark:bg-gray-700"
                         : "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
-                    }`}
+                      }`}
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDeleteTimer(timer.id)}
                     disabled={timer.isRunning}
-                    className={`px-3 py-2 font-bold text-sm rounded-lg ${
-                      timer.isRunning
+                    className={`px-3 py-2 font-bold text-sm rounded-lg ${timer.isRunning
                         ? "text-gray-400 dark:text-gray-500 cursor-not-allowed"
                         : "text-red-500 hover:text-red-700 dark:hover:text-red-400"
-                    }`}
+                      }`}
                   >
                     ✕
                   </button>
